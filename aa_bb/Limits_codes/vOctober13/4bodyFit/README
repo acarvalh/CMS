@@ -1,1 +1,12 @@
-oi
+
+to run the tool: 
+
+change the limit input (ddata and ssignal) on doWP.cc
+
+change the mass point you want to run on fits_4body.sh
+
+then just do
+
+. ./fits_4body.sh
+
+it will create subfolders with plots/root files with WS and combine results / log files of doWP.C and combine
