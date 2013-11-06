@@ -49,8 +49,8 @@ void runfits(const Float_t mass=120, Int_t mode=1)
   RooFitResult* fitresults;
   // Add the signal and background models to the workspace.
   // the minitree to be addeed
-  TString ssignal = "MiniTrees/OlivierOc13/v15_base_mgg_0_massCutVersion0/02013-10-30-Radion_m300_8TeV_nm_m300.root";
-  TString ddata   = "MiniTrees/OlivierOc13/v15_base_mgg_0_massCutVersion0/02013-10-30-Data_m300.root";
+  TString ssignal = "MiniTrees/OlivierOc13/v15_regkin_mgg_0_massCutVersion0/02013-10-30-Radion_m300_8TeV_nm_m300.root";
+  TString ddata   = "MiniTrees/OlivierOc13/v15_regkin_mgg_0_massCutVersion0/02013-10-30-Data_m300.root";
   //TString ddata   = "MiniTrees/OlivierAug13/v02_regkin_mgg_0/Data_regression-m300_minimal.root";
   //
   cout<<"Signal: "<< ssignal<<endl;
@@ -70,6 +70,8 @@ void runfits(const Float_t mass=120, Int_t mode=1)
   bool dobands=false;
   AddBkgData(wAll,ddata,fileBkgName,dobands);
   //
+//  MakeDataCardonecat(w, fileBaseName, fileBkgName);
+//  MakeDataCardREP(w, fileBaseName, fileBkgName);
   MakeDataCard(wall,wAll,fileBaseName,fileBkgName);
   MakeDataCardoneCat(wall,wAll,fileBaseName,fileBkgName);
   cout<< "here"<<endl;
@@ -544,14 +546,18 @@ void AddBkgData(RooWorkspace* wAll, TString datafile, const char* fileBaseName, 
     wAllSave->factory(
 	TString::Format("CMS_hgg_bkg_8TeV_slope2_cat%d[%g,-10,10]", 
 	c, wAll->var(TString::Format("mgg_bkg_8TeV_slope2_cat%d",c))->getVal()));
+    wAllSave->factory(
+	TString::Format("CMS_hgg_bkg_8TeV_slope3_cat%d[%g,-10,10]", 
+	c, wAll->var(TString::Format("mgg_bkg_8TeV_slope3_cat%d",c))->getVal()));
   }
   // (2) do reparametrization of background
-  for (int c = 0; c < ncat; ++c){ 
+  for (int c = 0; c < ncat; ++c){ //CMS_hgg_bkg
     wAllSave->factory(
 	TString::Format("EDIT::CMS_hgg_bkg_8TeV_cat%d(mggBkg_cat%d,",c,c) +
 	TString::Format(" mgg_bkg_8TeV_cat%d_norm=CMS_hgg_bkg_8TeV_cat%d_norm,", c,c)+
 	TString::Format(" mgg_bkg_8TeV_slope1_cat%d=CMS_hgg_bkg_8TeV_slope1_cat%d,", c,c)+
-	TString::Format(" mgg_bkg_8TeV_slope2_cat%d=CMS_hgg_bkg_8TeV_slope2_cat%d)", c,c)
+	TString::Format(" mgg_bkg_8TeV_slope2_cat%d=CMS_hgg_bkg_8TeV_slope2_cat%d,", c,c)+
+	TString::Format(" mgg_bkg_8TeV_slope3_cat%d=CMS_hgg_bkg_8TeV_slope3_cat%d)", c,c)
   	);
   } // close for cat
   // import also observed
@@ -625,13 +631,13 @@ void MakeDataCard(RooWorkspace* wall, RooWorkspace* wAll, const char* fileBaseNa
   outFile << "# the name after w_all is the name of the rooextpdf we want to use, we have both saved" << endl;
   outFile << "#shapes mtotBkg   cat0 " << TString(fileBkgName)+".root" << " w_all:mggBkg_cat0" << endl;
   outFile << "#shapes mtotBkg   cat1 "<<  TString(fileBkgName)+".root" << " w_all:mggBkg_cat1" << endl;
-  outFile << "shapes mtotBkg   cat0 " << TString(fileBkgName)+".root" << " w_all:CMS_hgg_bkg_cat0" << endl;
-  outFile << "shapes mtotBkg   cat1 " << TString(fileBkgName)+".root" << " w_all:CMS_hgg_bkg_cat1" << endl;
+  outFile << "shapes mtotBkg   cat0 " << TString(fileBkgName)+".root" << " w_all:CMS_hgg_bkg_8TeV_cat0" << endl;
+  outFile << "shapes mtotBkg   cat1 " << TString(fileBkgName)+".root" << " w_all:CMS_hgg_bkg_8TeV_cat1" << endl;
   outFile << "# signal" << endl;
   outFile << "#shapes mtotSig cat0 " << TString(fileBaseName)+".inputsig.root" << " w_allS_ws:mggSig_cat0" << endl;
   outFile << "#shapes mtotSig cat1 " << TString(fileBaseName)+".inputsig.root" << " w_allS_ws:mggSig_cat1" << endl;
-  outFile << "shapes mtotSig cat0 " << TString(fileBaseName)+".inputsig.root" << " w_allS_ws:CMS_hgg_sig_cat0" << endl;
-  outFile << "shapes mtotSig cat1 " << TString(fileBaseName)+".inputsig.root" << " w_allS_ws:CMS_hgg_sig_cat1" << endl;
+  outFile << "shapes mtotSig cat0 " << TString(fileBaseName)+".inputsig.root" << " w_all:CMS_hgg_sig_cat0" << endl;
+  outFile << "shapes mtotSig cat1 " << TString(fileBaseName)+".inputsig.root" << " w_all:CMS_hgg_sig_cat1" << endl;
   outFile << "---------------" << endl;
   /////////////////////////////////////
   // begin declaration
@@ -645,8 +651,8 @@ void MakeDataCard(RooWorkspace* wall, RooWorkspace* wAll, const char* fileBaseNa
   outFile << "process                 mtotSig     mtotBkg     mtotSig    mtotBkg" << endl;
   outFile << "process                    0          1          0         1" << endl;
   outFile <<  "rate                      " 
-	   << "  " << sigToFit[0]->sumEntries() << "  " <<  Data[0]->sumEntries()  
-	   << "  " << sigToFit[1]->sumEntries() << "  " <<  Data[1]->sumEntries()
+	   << "  " << sigToFit[0]->sumEntries() << "  " <<  1  
+	   << "  " << sigToFit[1]->sumEntries() << "  " <<  1
 	   << "  " << endl;
   outFile << "--------------------------------" << endl;
   outFile << "lumi_8TeV           lnN "
@@ -700,8 +706,8 @@ void MakeDataCard(RooWorkspace* wall, RooWorkspace* wAll, const char* fileBaseNa
   outFile << "CMS_hgg_bkg_8TeV_slope2_cat0         flatParam  # Mean and absolute uncertainty on background slope" << endl;
   outFile << "CMS_hgg_bkg_8TeV_slope2_cat1         flatParam  # Mean and absolute uncertainty on background slope" << endl;
 
-  outFile << "CMS_hgg_bkg_8TeV_slope2_cat0         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "CMS_hgg_bkg_8TeV_slope2_cat1         flatParam  # Mean and absolute uncertainty on background slope" << endl;
+  outFile << "CMS_hgg_bkg_8TeV_slope3_cat0         flatParam  # Mean and absolute uncertainty on background slope" << endl;
+  outFile << "CMS_hgg_bkg_8TeV_slope3_cat1         flatParam  # Mean and absolute uncertainty on background slope" << endl;
   /////////////////////////////////////
 
   /////////////////////////////////////
@@ -759,10 +765,10 @@ void MakeDataCardoneCat(RooWorkspace* wall, RooWorkspace* wAll, const char* file
   outFile << "shapes data_obs  cat0 " << TString(fileBkgName)+".root" << " w_all:data_obs_cat0" << endl;
   //outFile << "shapes data_obs  cat1 "<<  TString(fileBkgName)+".root" << " w_allB_ws:data_obs_cat1" << endl;
   outFile << "#shapes mtotBkg   cat0 " << TString(fileBkgName)+".root" << " w_all:mggBkg_cat0" << endl;
-   outFile << "shapes mtotBkg   cat0 " << TString(fileBkgName)+".root" << " w_all:CMS_hgg_bkg_cat0" << endl;
+   outFile << "shapes mtotBkg   cat0 " << TString(fileBkgName)+".root" << " w_all:CMS_hgg_bkg_8TeV_cat0" << endl;
   //outFile << "shapes mtotBkg   cat1 "<<  TString(fileBkgName)+".root" << " w_allB_ws:mggBkg_cat1" << endl;
   outFile << "# signal" << endl;
-  outFile << "shapes mtotSig cat0 " << TString(fileBaseName)+".inputsig.root" << " w_allS_ws:mggSig_cat0" << endl;
+  outFile << "shapes mtotSig cat0 " << TString(fileBaseName)+".inputsig.root" << " w_all:mggSig_cat0" << endl;
   //outFile << "shapes mtotSig cat1 " << TString(fileBaseName)+".inputsig.root" << " w_allS_ws:mggSig_cat1" << endl;
   outFile << "---------------" << endl;
   /////////////////////////////////////
@@ -777,7 +783,7 @@ void MakeDataCardoneCat(RooWorkspace* wall, RooWorkspace* wAll, const char* file
   outFile << "process                 mtotSig     mtotBkg     " << endl;
   outFile << "process                    0          1        " << endl;
   outFile <<  "rate                      " 
-	   << "  " << sigToFit[0]->sumEntries() << "  " <<  Data[0]->sumEntries()  
+	   << "  " << sigToFit[0]->sumEntries() << "  " <<  1 
 	   //<< "  " << sigToFit[1]->sumEntries() << "  " <<  Data[1]->sumEntries()
 	   << "  " << endl;
   outFile << "--------------------------------" << endl;
@@ -812,16 +818,16 @@ void MakeDataCardoneCat(RooWorkspace* wall, RooWorkspace* wAll, const char* file
   outFile << "CMS_hgg_sig_m0_absShift    param   1   0.006   # displacement of the dipho mean" << endl;
   outFile << "CMS_hgg_sig_sigmaScale     param   1   0.30   # optimistic estimative of resolution uncertainty  " << endl;
   outFile << "############## for mtot fit - slopes" << endl;
-  outFile << "mgg_bkg_8TeV_norm_cat0           flatParam  # Normalization uncertainty on background slope" << endl;
+  outFile << "CMS_hgg_bkg_8TeV_cat0_norm           flatParam  # Normalization uncertainty on background slope" << endl;
   //outFile << "mgg_bkg_8TeV_norm_cat1           flatParam  # Normalization uncertainty on background slope" << endl;
 
-  outFile << "mgg_bkg_8TeV_slope1_cat0         flatParam  # Mean and absolute uncertainty on background slope" << endl;
+  outFile << "CMS_hgg_bkg_8TeV_slope1_cat0         flatParam  # Mean and absolute uncertainty on background slope" << endl;
   //outFile << "mgg_bkg_8TeV_slope1_cat1         flatParam  # Mean and absolute uncertainty on background slope" << endl;
 
-  outFile << "mgg_bkg_8TeV_slope2_cat0         flatParam  # Mean and absolute uncertainty on background slope" << endl;
+  outFile << "CMS_hgg_bkg_8TeV_slope2_cat0         flatParam  # Mean and absolute uncertainty on background slope" << endl;
   //outFile << "mgg_bkg_8TeV_slope2_cat1         flatParam  # Mean and absolute uncertainty on background slope" << endl;
 
-  outFile << "mgg_bkg_8TeV_slope2_cat0         flatParam  # Mean and absolute uncertainty on background slope" << endl;
+  outFile << "CMS_hgg_bkg_8TeV_slope3_cat0         flatParam  # Mean and absolute uncertainty on background slope" << endl;
   //outFile << "mgg_bkg_8TeV_slope2_cat1         flatParam  # Mean and absolute uncertainty on background slope" << endl;
 
   /////////////////////////////////////
