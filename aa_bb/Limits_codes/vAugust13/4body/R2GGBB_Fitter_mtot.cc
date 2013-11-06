@@ -63,8 +63,12 @@ void runfits(const Float_t mass=120, Int_t mode=1, Bool_t dobands = false)
   HLFactory hlf("HLFactory", card_name, false);
   RooWorkspace* w = hlf.GetWs(); // Get models and variables
   RooFitResult* fitresults;
-  TString ssignal = "MiniTrees/OlivierOc13/v16_base_mggjj_0/02013-11-05-Radion_m500_8TeV_nm_m500.root";
-  TString ddata   = "MiniTrees/OlivierOc13/v16_base_mggjj_0/02013-11-05-Data_m500.root";
+//  TString ssignal = "MiniTrees/OlivierAug13/v02_regkin_mggjj_0/Radion_m500_regression-m500_minimal.root";
+//  TString ddata   = "MiniTrees/OlivierAug13/v02_regkin_mggjj_0/Data_regression-m500_minimal.root";
+//  TString ssignal = "MiniTrees/OlivierOc13/v15_base_mggjj_0/02013-10-30-Radion_m1000_8TeV_nm_m1000.root";
+//  TString ddata   = "MiniTrees/OlivierOc13/v15_base_mggjj_0/02013-10-30-Data_m1000.root";
+  TString ssignal = "MiniTrees/OlivierOc13/v16_base_mggjj_0/02013-11-05-Radion_m1000_8TeV_nm_m1000.root";
+  TString ddata   = "MiniTrees/OlivierOc13/v16_base_mggjj_0/02013-11-05-Data_m1000.root";
   //
   cout<<"Signal: "<< ssignal<<endl;
   cout<<"Data: "<< ddata<<endl;
@@ -357,7 +361,7 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
     legmc->AddEntry(plotmtotBkg[c]->getObject(1),"Exponential fit","L");
     if(dobands)legmc->AddEntry(twosigma,"two sigma ","F"); 
     if(dobands)legmc->AddEntry(onesigma,"one sigma","F");
-    legmc->SetHeader("WP4 500 GeV");
+    legmc->SetHeader("WP4 1000 GeV");
     legmc->SetBorderSize(0);
     legmc->SetFillStyle(0);
     legmc->Draw();    
@@ -621,7 +625,7 @@ void MakePlots(RooWorkspace* w, Float_t Mass, RooFitResult* fitresults) {
     //    float effS = effSigma(hist);
     TLatex *lat  = new TLatex(
 	minMassFit+1.5,0.85*plotmtot[c]->GetMaximum(),
-	" WP4 500 GeV");
+	" WP4 1000 GeV");
     lat->Draw();
     TLatex *lat2 = new TLatex(
 	minMassFit+1.5,0.75*plotmtot[c]->GetMaximum(),catdesc.at(c));
