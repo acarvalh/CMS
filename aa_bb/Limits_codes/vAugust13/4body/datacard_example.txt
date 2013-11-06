@@ -1,0 +1,47 @@
+#CMS-HGG DataCard for Unbinned Limit Setting, 19620 pb-1 
+#Run with: combine -d hgg.mH130.0.shapes-Unbinned.txt -U -m 130 -H ProfileLikelihood -M MarkovChainMC --rMin=0 --rMax=20.0  -b 3000 -i 50000 --optimizeSim=1 --tries 30
+# Lumi =  19620 pb-1
+imax 2
+jmax 1
+kmax *
+---------------
+# the name after w_all is the name of the rooextpdf we want to use, we have both saved
+# BKG
+shapes data_obs  cat0 hgg.inputbkg_8TeV.root w_all:data_obs_cat0
+shapes data_obs  cat1 hgg.inputbkg_8TeV.root w_all:data_obs_cat1
+############## shape with reparametrization
+shapes mtotBkg   cat0 hgg.inputbkg_8TeV.root w_all:CMS_hgg_bkg_8TeV_cat0
+shapes mtotBkg   cat1 hgg.inputbkg_8TeV.root w_all:CMS_hgg_bkg_8TeV_cat1
+# signal
+shapes mtotSig cat0 hgg.mH500.0_8TeV.inputsig.root w_all:CMS_hgg_sig_cat0
+shapes mtotSig cat1 hgg.mH500.0_8TeV.inputsig.root w_all:CMS_hgg_sig_cat1
+---------------
+bin          cat0   cat1 
+observation   6  107  
+------------------------------
+bin                      cat0       cat0      cat1       cat1
+process                 mtotSig     mtotBkg     mtotSig    mtotBkg
+process                    0          1          0         1
+rate                        2.0061  1  2.62011  1  
+--------------------------------
+lumi_8TeV           lnN 1.022   -     1.022   -     
+############## jet
+Mjj_acceptance              lnN 1.015        -   1.015        -   # JER and JES 
+btag_eff          lnN 1.06        -  1.03        -  # b tag efficiency uncertainty
+############## photon 
+CMS_hgg_eff_g       lnN 1.010        -   1.010        -   # photon selection accep.
+DiphoTrigger lnN 1.01         -   1.01         -   # Trigger efficiency
+############## for mtot fit
+maa_acceptance       lnN 1.005        -   1.005        -   # photon energy resolution
+############## normalization floating
+# Parametric shape uncertainties, entered by hand. they act on both higgs/signal 
+CMS_hgg_sig_m0_absShift    param   1   0.006   # displacement of the dipho mean
+CMS_hgg_sig_sigmaScale     param   1   0.11   # optimistic estimative of resolution uncertainty  
+############## for mtot fit - slopes
+############## with reparametrization
+CMS_hgg_bkg_8TeV_cat0_norm           flatParam  # Normalization uncertainty on background slope
+CMS_hgg_bkg_8TeV_cat1_norm           flatParam  # Normalization uncertainty on background slope
+CMS_hgg_bkg_8TeV_slope1_cat0         flatParam  # Mean and absolute uncertainty on background slope
+CMS_hgg_bkg_8TeV_slope1_cat1         flatParam  # Mean and absolute uncertainty on background slope
+CMS_hgg_bkg_8TeV_slope2_cat0         flatParam  # Mean and absolute uncertainty on background slope
+CMS_hgg_bkg_8TeV_slope2_cat1         flatParam  # Mean and absolute uncertainty on background slope
