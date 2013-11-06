@@ -187,19 +187,6 @@ void AddSigData(RooWorkspace* wall, Float_t mass, TString signalfile, const char
   //
   wAllSave->factory("prod::CMS_hgg_sig_gsigma_cat0(mtot_sig_gsigma_cat0, CMS_hgg_sig_sigmaScale)");
   wAllSave->factory("prod::CMS_hgg_sig_gsigma_cat1(mtot_sig_gsigma_cat1, CMS_hgg_sig_sigmaScale)");
-  for (int c = 0; c < ncat; ++c) {
-    wAllSave->factory(
-	TString::Format("CMS_hgg_sig_alpha_cat%d[%g,0.5,5]", 
-	c, wall->var(TString::Format("mtot_sig_alpha_cat%d",c))->getVal()));
-  
-    wAllSave->factory(
-	TString::Format("CMS_hgg_sig_n_cat%d[%g,0.5,20]", 
-	c, wall->var(TString::Format("mtot_sig_n_cat%d",c))->getVal()));
-  
-    wAllSave->factory(
-	TString::Format("CMS_hgg_sig_frac_cat%d[%g,0.0,1.0]", 
-	c, wall->var(TString::Format("mtot_sig_frac_cat%d",c))->getVal()));
-  }
 
   // (4) do reparametrization of signal
   // parameters that are not re-calculated should not be savev
@@ -207,9 +194,6 @@ void AddSigData(RooWorkspace* wall, Float_t mass, TString signalfile, const char
 		  TString::Format("EDIT::CMS_hgg_sig_cat%d(mtotSig_cat%d,",c,c) +
 		  TString::Format("mtot_sig_m0_cat%d=CMS_hgg_sig_m0_cat%d, ", c,c) +
 		  TString::Format("mtot_sig_sigma_cat%d=CMS_hgg_sig_sigma_cat%d, ", c,c) +
-		  TString::Format("mtot_sig_alpha_cat%d=CMS_hgg_sig_alpha_cat%d, ", c,c) +
-		  TString::Format("mtot_sig_n_cat%d=CMS_hgg_sig_n_cat%d, ", c,c) +
-		  TString::Format("mtot_sig_frac_cat%d=CMS_hgg_sig_frac_cat%d, ", c,c) +
 		  TString::Format("mtot_sig_gsigma_cat%d=CMS_hgg_sig_gsigma_cat%d)", c,c)
   );
   //
