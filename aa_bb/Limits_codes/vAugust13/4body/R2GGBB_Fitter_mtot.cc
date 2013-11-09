@@ -41,15 +41,19 @@ const int minfit =320, maxfit=1200;
 RooArgSet* defineVariables()
 {
   // define variables of the input ntuple
-  RooRealVar* mtot  = new RooRealVar("mtot","M(#gamma#gamma)",320,1200,"GeV");
+  RooRealVar* mtot  = new RooRealVar("mtot","M(#gamma#gamma jj)",320,1200,"GeV");
+  RooRealVar* mgg  = new RooRealVar("mgg","M(#gamma#gamma)",100,180,"GeV");
   RooRealVar* evWeight   = new RooRealVar("evWeight","HqT x PUwei",0,100,"");
   RooCategory* cut_based_ct = new RooCategory("cut_based_ct","event category 2") ;
   //
   cut_based_ct->defineType("cat4_0",0);
   cut_based_ct->defineType("cat4_1",1);
   //
-  RooArgSet* ntplVars = new RooArgSet(*mtot, * cut_based_ct, *evWeight);
+  RooArgSet* ntplVars = new RooArgSet(*mtot, *mgg, * cut_based_ct, *evWeight);
   ntplVars->add(*cut_based_ct);
+  ntplVars->add(*mtot);
+  ntplVars->add(*mgg);
+  ntplVars->add(*evWeight);
   return ntplVars;
 }
 
@@ -67,8 +71,9 @@ void runfits(const Float_t mass=120, Int_t mode=1, Bool_t dobands = false)
 //  TString ddata   = "MiniTrees/OlivierAug13/v02_regkin_mggjj_0/Data_regression-m500_minimal.root";
 //  TString ssignal = "MiniTrees/OlivierOc13/v15_base_mggjj_0/02013-10-30-Radion_m1000_8TeV_nm_m1000.root";
 //  TString ddata   = "MiniTrees/OlivierOc13/v15_base_mggjj_0/02013-10-30-Data_m1000.root";
-  TString ssignal = "MiniTrees/OlivierOc13/v16_base_mggjj_0/02013-11-05-Radion_m1000_8TeV_nm_m1000.root";
-  TString ddata   = "MiniTrees/OlivierOc13/v16_base_mggjj_0/02013-11-05-Data_m1000.root";
+  //
+  TString ssignal = "MiniTrees/OlivierOc13/v18_kin_mggjj_0/02013-11-06-Radion_m300_8TeV_nm_m300.root";
+  TString ddata   = "MiniTrees/OlivierOc13/v18_kin_mggjj_0/02013-11-06-Data_m300.root";
   //
   cout<<"Signal: "<< ssignal<<endl;
   cout<<"Data: "<< ddata<<endl;
@@ -82,7 +87,6 @@ void runfits(const Float_t mass=120, Int_t mode=1, Bool_t dobands = false)
   // Construct points workspace
   MakeSigWS(w, fileBaseName);
   MakeBkgWS(w, fileBkgName);
-  MakeBkgWSlnu(w, fileBkgName);
   MakePlots(w, mass, fitresults);
 
   MakeDataCardonecat(w, fileBaseName, fileBkgName);
@@ -115,10 +119,11 @@ void AddSigData(RooWorkspace* w, Float_t mass, TString signalfile) {
 	mainCut,
 	"evWeight");
   RooDataSet* sigToFit[ncat]; 
+  TString cut0 = "&& mgg > 120 && mgg < 130 "; // " && 1>0";//
   for (int c = 0; c < ncat; ++c) {
     sigToFit[c] = (RooDataSet*) sigScaled.reduce(
 	*w->var("mtot"),
-	mainCut+TString::Format(" && cut_based_ct==%d",c));
+	mainCut+TString::Format(" && cut_based_ct==%d",c)+cut0);
     w->import(*sigToFit[c],Rename(TString::Format("Sig_cat%d",c)));
   } // close ncat
   // Create full signal data set without categorization
@@ -154,15 +159,16 @@ void AddBkgData(RooWorkspace* w, TString datafile) {
 
   RooDataSet* dataToFit[ncat];
   RooDataSet* dataToPlot[ncat];
+  TString cut0 = "&& mgg > 120 && mgg < 130 "; // " && 1>0";//
   for (int c = 0; c < ncat; ++c) {
     dataToFit[c]   = (RooDataSet*) Data.reduce(
 	*w->var("mtot"),
-	TString::Format(" cut_based_ct==%d",c));
+	TString::Format(" cut_based_ct==%d",c)+cut0);
     dataToPlot[c]   = (RooDataSet*) Data.reduce(
 	*w->var("mtot"),
 	//mainCut+TString::Format(" && cut_based_ct==%d",c)+TString::Format(" && (mtot > 550 || mtot < 450)")); // blind
 	TString::Format(" cut_based_ct==%d",c) 
-	+TString::Format(" && (mtot > 2050)") 
+	+TString::Format(" && (mtot > 2050)") + cut0
     );
     w->import(*dataToFit[c],Rename(TString::Format("Data_cat%d",c)));
     w->import(*dataToPlot[c],Rename(TString::Format("Dataplot_cat%d",c)));
@@ -300,7 +306,7 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
 	plotmtotBkg[c],
 	Normalization(norm,RooAbsPdf::NumEvent),LineColor(kRed)); 
     */ 
-    plotmtotBkg[c]->SetTitle("CMS preliminary 19.706/fb");      
+    plotmtotBkg[c]->SetTitle("CMS preliminary 19.702/fb");      
     plotmtotBkg[c]->SetMinimum(0.0);
     plotmtotBkg[c]->SetMaximum(1.40*plotmtotBkg[c]->GetMaximum());
     plotmtotBkg[c]->GetXaxis()->SetTitle("M_{#gamma#gamma jj} (GeV)");
@@ -409,7 +415,6 @@ void MakeSigWS(RooWorkspace* w, const char* fileBaseName) {
   //
   wAll->factory("prod::CMS_hgg_sig_gsigma_cat0(mtot_sig_gsigma_cat0, CMS_hgg_sig_sigmaScale)");
   wAll->factory("prod::CMS_hgg_sig_gsigma_cat1(mtot_sig_gsigma_cat1, CMS_hgg_sig_sigmaScale)");
-
   // (4) do reparametrization of signal
   for (int c = 0; c < ncat; ++c) wAll->factory(
 		  TString::Format("EDIT::CMS_hgg_sig_cat%d(mtotSig_cat%d,",c,c) +
@@ -441,7 +446,7 @@ void MakeBkgWS(RooWorkspace* w, const char* fileBaseName) {
     wAll->import(*w->pdf(TString::Format("mtotBkg_cat%d",c)));
     wAll->factory(
 	TString::Format("CMS_hgg_bkg_8TeV_cat%d_norm[%g,0.0,100000.0]", 
-	c, wAll->var(TString::Format("mtot_bkg_8TeV_cat%d_norm",c))->getVal())); // what is this 1* slope?
+	c, wAll->var(TString::Format("mtot_bkg_8TeV_cat%d_norm",c))->getVal())); 
     wAll->factory(
 	TString::Format("CMS_hgg_bkg_8TeV_slope1_cat%d[%g,-500,500]", 
 	c, wAll->var(TString::Format("mtot_bkg_8TeV_slope1_cat%d",c))->getVal()));
@@ -468,46 +473,6 @@ void MakeBkgWS(RooWorkspace* w, const char* fileBaseName) {
   std::cout << std::endl;
   return;
 } // close make BKG workspace
-////////////////////////////////////////////////////////////////
-void MakeBkgWSlnu(RooWorkspace* w, const char* fileBaseName) {
-  TString wsDir   = "workspaces/";
-  const Int_t ncat = NCAT;  
-  //**********************************************************************//
-  // Write pdfs and datasets into the workspace 
-  // for statistical tests. 
-  //**********************************************************************//
-  RooDataSet* data[ncat];
-  RooAbsPdf* mtotBkgPdf[ncat];
-  // (1) import everything functions before to save to a file
-  RooWorkspace *wAll = new RooWorkspace("w_all","w_all");
-  for (int c = 0; c < ncat; ++c) {
-    data[c]      = (RooDataSet*) w->data(TString::Format("Data_cat%d",c));
-    mtotBkgPdf[c] = (RooAbsPdf*)  w->pdf(TString::Format("mtotBkg_cat%d",c));
-    wAll->import(*data[c], Rename(TString::Format("data_obs_cat%d",c)));
-    wAll->import(*w->pdf(TString::Format("mtotBkg_cat%d",c)));
-  }
-  for (int c = 0; c < ncat; ++c) {
-    wAll->factory(
-	TString::Format("mtotBkg_cat%d_norm[%g,0.0,100000.0]", 
-	c, wAll->var(TString::Format("mtot_bkg_8TeV_cat%d_norm",c))->getVal())); // what is this 1* slope?
-    wAll->factory(
-	TString::Format("mtotBkg_slope1_cat%d[%g,-500,500]", 
-	c, wAll->var(TString::Format("mtot_bkg_8TeV_slope1_cat%d",c))->getVal()));
-    wAll->factory(
-	TString::Format("mtotBkg_slope2_cat%d[%g,-100,100]", 
-	c, wAll->var(TString::Format("mtot_bkg_8TeV_slope2_cat%d",c))->getVal()));
-  }
-  TString filename(wsDir+TString(fileBaseName)+"lnu.root");
-  wAll->writeToFile(filename);
-  cout << "Write background workspace in: " << filename << " file" << endl;
-  std::cout << "observation ";
-  for (int c = 0; c < ncat; ++c) {
-    std::cout << "  " << wAll->data(TString::Format("data_obs_cat%d",c))->sumEntries();
-  }
-  std::cout << std::endl;
-  return;
-} // close make BKG workspace
-
 ////////////////////////////////////////////////////////////////////
 void SetConstantParams(const RooArgSet* params) { 
   // set constant parameters for signal fit, ... NO IDEA !!!!
@@ -875,24 +840,15 @@ cout<<"here"<<endl;
   	<< "1.005        -   "
   	<< "# photon energy resolution" << endl;
   outFile << "############## normalization floating" << endl;
-  outFile << "bkgNorm       lnU "
-  	<< "-        5   "
-  	<< "-        5   "
+  outFile << "mtotBkg       lnU "
+  	<< "-        2   "
+  	<< "-        2   "
   	<< "# k means vary between 1/k and k times the value in the workspace" << endl;
   outFile << "# Parametric shape uncertainties, entered by hand. they act on both higgs/signal " << endl;
   outFile << "CMS_hgg_sig_m0_absShift    param   1   0.006   # displacement of the dipho mean" << endl;
   outFile << "CMS_hgg_sig_sigmaScale     param   1   0.11   # optimistic estimative of resolution uncertainty  " << endl;
   outFile << "############## for mtot fit - slopes" << endl;
-  outFile << "############## with reparametrization" << endl;
-  outFile << "#CMS_hgg_bkg_8TeV_cat0_norm           flatParam  # Normalization uncertainty on background slope" << endl;
-  outFile << "#CMS_hgg_bkg_8TeV_cat1_norm           flatParam  # Normalization uncertainty on background slope" << endl;
-  outFile << "#CMS_hgg_bkg_8TeV_slope1_cat0         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "#CMS_hgg_bkg_8TeV_slope1_cat1         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "#CMS_hgg_bkg_8TeV_slope2_cat0         flatParam  # Mean and absolute uncertainty on background slope" << endl;
-  outFile << "#CMS_hgg_bkg_8TeV_slope2_cat1         flatParam  # Mean and absolute uncertainty on background slope" << endl;
   outFile << "############## without reparametrization" << endl;
-  outFile << "#mtot_bkg_8TeV_cat0_norm           flatParam  # Normalization uncertainty on background slope" << endl;
-  outFile << "#mtot_bkg_8TeV_cat1_norm           flatParam  # Normalization uncertainty on background slope" << endl;
   outFile << "mtot_bkg_8TeV_slope1_cat0         flatParam  # Mean and absolute uncertainty on background slope" << endl;
   outFile << "mtot_bkg_8TeV_slope1_cat1         flatParam  # Mean and absolute uncertainty on background slope" << endl;
   outFile << "mtot_bkg_8TeV_slope2_cat0         flatParam  # Mean and absolute uncertainty on background slope" << endl;
