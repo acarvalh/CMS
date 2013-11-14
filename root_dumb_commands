@@ -1,4 +1,0 @@
-
-cut a tree on terminal
-
-TCVARS->Draw("mgg","mgg>120 && mgg<130")

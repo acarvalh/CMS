@@ -1,0 +1,16 @@
+cut a tree on terminal
+
+TCVARS->Draw("mgg","mgg>120 && mgg<130")
+
+
+##########################################################3
+
+git
+
+git clone
+git add
+git commit
+git push
+git status
+git l
+git remote -v
