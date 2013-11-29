@@ -15,8 +15,15 @@
  */
   // this one is for 4 body fit               
 
-using namespace RooFit;
-using namespace RooStats ;
+#include "GaussExp.h" 
+#include "RooAbsPdf.h"
+#include "RooRealProxy.h"
+#include "RooCategoryProxy.h"
+#include "RooAbsReal.h"
+#include "RooAbsCategory.h"
+
+//using namespace RooFit;
+//using namespace RooStats ;
 
 const Int_t NCAT = 2;
 
@@ -36,12 +43,12 @@ void SetConstantParams(const RooArgSet* params);
 RooFitResult* fitresult[NCAT]; // container for the fit results
 RooFitResult*  BkgModelFitBernstein(RooWorkspace*, Bool_t);
 
-const int minfit =320, maxfit=1200;
+const int minfit =150, maxfit=1200;
 
 RooArgSet* defineVariables()
 {
   // define variables of the input ntuple
-  RooRealVar* mtot  = new RooRealVar("mtot","M(#gamma#gamma jj)",320,1200,"GeV");
+  RooRealVar* mtot  = new RooRealVar("mtot","M(#gamma#gamma jj)",150,1200,"GeV");
   RooRealVar* mgg  = new RooRealVar("mgg","M(#gamma#gamma)",100,180,"GeV");
   RooRealVar* evWeight   = new RooRealVar("evWeight","HqT x PUwei",0,100,"");
   RooCategory* cut_based_ct = new RooCategory("cut_based_ct","event category 2") ;
@@ -72,8 +79,8 @@ void runfits(const Float_t mass=120, Int_t mode=1, Bool_t dobands = false)
 //  TString ssignal = "MiniTrees/OlivierOc13/v15_base_mggjj_0/02013-10-30-Radion_m1000_8TeV_nm_m1000.root";
 //  TString ddata   = "MiniTrees/OlivierOc13/v15_base_mggjj_0/02013-10-30-Data_m1000.root";
   //
-  TString ssignal = "MiniTrees/OlivierOc13/v18_kin_mggjj_0/02013-11-06-Radion_m300_8TeV_nm_m300.root";
-  TString ddata   = "MiniTrees/OlivierOc13/v18_kin_mggjj_0/02013-11-06-Data_m300.root";
+  TString ssignal = "MiniTrees/ChiaraNov13/v20/finalizedTrees_Radion_V07__fitToGGJJ__noKinFit/RadionSignal_m650.root";
+  TString ddata   = "MiniTrees/ChiaraNov13/v20/finalizedTrees_Radion_V07__fitToGGJJ__noKinFit/Data.root";
   //
   cout<<"Signal: "<< ssignal<<endl;
   cout<<"Data: "<< ddata<<endl;
@@ -166,9 +173,8 @@ void AddBkgData(RooWorkspace* w, TString datafile) {
 	TString::Format(" cut_based_ct==%d",c)+cut0);
     dataToPlot[c]   = (RooDataSet*) Data.reduce(
 	*w->var("mtot"),
-	//mainCut+TString::Format(" && cut_based_ct==%d",c)+TString::Format(" && (mtot > 550 || mtot < 450)")); // blind
 	TString::Format(" cut_based_ct==%d",c) 
-	+TString::Format(" && (mtot > 2050)") + cut0
+	+TString::Format(" && (mtot > 2050)") + cut0 // blind
     );
     w->import(*dataToFit[c],Rename(TString::Format("Data_cat%d",c)));
     w->import(*dataToPlot[c],Rename(TString::Format("Dataplot_cat%d",c)));
@@ -249,17 +255,26 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
     //((RooRealVar*) w->var(TString::Format("mtot_bkg_8TeV_slope3_cat%d",c)))->setConstant(true);
     //cout << "---------------- Parameter 3 set to const" << endl;
   cout<<"here 0 "<< c<<endl;
-  RooFormulaVar *p1mod = new RooFormulaVar(
+  RooFormulaVar *p1mod = new RooFormulaVar( // parameter 0 is the mean of the Gaussian core,
 	TString::Format("p1mod_cat%d",c),"","@0",*w->var(TString::Format("mtot_bkg_8TeV_slope1_cat%d",c)));
-  cout<<"here 6 "<< c<<endl;
-  RooFormulaVar *p2mod = new RooFormulaVar(
+  RooFormulaVar *p2mod = new RooFormulaVar( // parameter 1 is the std dev of the Gaussian
 	TString::Format("p2mod_cat%d",c),"","@0",*w->var(TString::Format("mtot_bkg_8TeV_slope2_cat%d",c)));
-  cout<<"here 1 "<< c<<endl;
+  RooFormulaVar *p3mod = new RooFormulaVar( // parameter 2 is the number of std dev from the mean where the exponential fall off starts on the high side of the Gaussian. Parameter number 2, incidentally, is identical to theexponent of the exponential, by requiring analytical continuity at the joining point
+	TString::Format("p3mod_cat%d",c),"","@0",*w->var(TString::Format("mtot_bkg_8TeV_slope3_cat%d",c)));
 
+    RooAbsPdf* mtotBkgTmp0 = 0; // declare a empty pdf
+    // adding pdf's, using the variables
+    mtotBkgTmp0 = new  GaussExp( // fill the pdf with the floating parameters
+				   TString::Format("mggBkgTmp0_cat%d",c),
+				   "", *mtot, 
+				   *p1mod, *p2mod, *p3mod); 
+
+/*
   RooAbsPdf* mtotBkgTmp0 = new RooGenericPdf(  // if exp function
 		TString::Format("DijetBackground_%d",c), 
 		"exp(-@0/(@1*@1+@2*@2*@0))", 
 		RooArgList(*mtot, *p1mod, *p2mod));
+*/
   w->factory(TString::Format("mtot_bkg_8TeV_cat%d_norm[1.0,0.0,100000]",c));
 
   RooExtendPdf mtotBkgTmp( // we copy the pdf? normalized
@@ -287,7 +302,7 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
 	plotmtotBkg[c],
 	LineColor(kBlue),
 	Range("fitrange"),NormRange("fitrange")); 
-    //dataplot[c]->plotOn(plotmtotBkg[c]); // blind 
+//    dataplot[c]->plotOn(plotmtotBkg[c]); // blind 
     plotmtotBkg[c]->Draw();  
     cout << "!!!!!!!!!!!!!!!!!" << endl;
     cout << "!!!!!!!!!!!!!!!!!" << endl; // now we fit the gaussian on signal
@@ -308,7 +323,7 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
     */ 
     plotmtotBkg[c]->SetTitle("CMS preliminary 19.702/fb");      
     plotmtotBkg[c]->SetMinimum(0.0);
-    plotmtotBkg[c]->SetMaximum(1.40*plotmtotBkg[c]->GetMaximum());
+    plotmtotBkg[c]->SetMaximum(20*plotmtotBkg[c]->GetMaximum());
     plotmtotBkg[c]->GetXaxis()->SetTitle("M_{#gamma#gamma jj} (GeV)");
     if (dobands) {
       RooAbsPdf *cpdf; cpdf = mtotBkgTmp0;
@@ -356,14 +371,14 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
       onesigma->Draw("L3 SAME");
       plotmtotBkg[c]->Draw("SAME");
     } else plotmtotBkg[c]->Draw("SAME"); // close dobands
-   plotmtotBkg[c]->GetYaxis()->SetRangeUser(0.0000001,10);
+   plotmtotBkg[c]->GetYaxis()->SetRangeUser(0.0000001,100); // this one works
    //plotmtotBkg[c]->Draw("AC");
-   ctmp->SetLogy(0);
+   ctmp->SetLogy(1);
    ctmp->SetGrid(1);
    cout << "!!!!!!!!!!!!!!!!!" << endl; 
 
     TLegend *legmc = new TLegend(0.62,0.75,0.92,0.9);
-    //legmc->AddEntry(plotmtotBkg[c]->getObject(2),"Data ",""); //"LPE" blind
+//    legmc->AddEntry(plotmtotBkg[c]->getObject(2),"Data ",""); //"LPE" blind
     legmc->AddEntry(plotmtotBkg[c]->getObject(1),"Exponential fit","L");
     if(dobands)legmc->AddEntry(twosigma,"two sigma ","F"); 
     if(dobands)legmc->AddEntry(onesigma,"one sigma","F");
@@ -453,6 +468,9 @@ void MakeBkgWS(RooWorkspace* w, const char* fileBaseName) {
     wAll->factory(
 	TString::Format("CMS_hgg_bkg_8TeV_slope2_cat%d[%g,-100,100]", 
 	c, wAll->var(TString::Format("mtot_bkg_8TeV_slope2_cat%d",c))->getVal()));
+//    wAll->factory(
+//	TString::Format("CMS_hgg_bkg_8TeV_slope3_cat%d[%g,-100,100]", 
+//	c, wAll->var(TString::Format("mtot_bkg_8TeV_slope3_cat%d",c))->getVal()));
   }
   // (2) do reparametrization of background
   for (int c = 0; c < ncat; ++c){ 
@@ -460,7 +478,8 @@ void MakeBkgWS(RooWorkspace* w, const char* fileBaseName) {
 	TString::Format("EDIT::CMS_hgg_bkg_8TeV_cat%d(mtotBkg_cat%d,",c,c) +
 	TString::Format(" mtot_bkg_8TeV_cat%d_norm=CMS_hgg_bkg_8TeV_cat%d_norm,", c,c)+
 	TString::Format(" mtot_bkg_8TeV_slope1_cat%d=CMS_hgg_bkg_8TeV_slope1_cat%d,", c,c)+
-	TString::Format(" mtot_bkg_8TeV_slope2_cat%d=CMS_hgg_bkg_8TeV_slope2_cat%d)", c,c)
+	TString::Format(" mtot_bkg_8TeV_slope2_cat%d=CMS_hgg_bkg_8TeV_slope2_cat%d)", c,c)//+
+//	TString::Format(" mtot_bkg_8TeV_slope3_cat%d=CMS_hgg_bkg_8TeV_slope3_cat%d)", c,c)
   	);
   } // close for cat
   TString filename(wsDir+TString(fileBaseName)+".root");
