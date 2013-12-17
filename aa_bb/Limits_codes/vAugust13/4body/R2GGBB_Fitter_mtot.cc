@@ -76,11 +76,11 @@ void runfits(const Float_t mass=120, Int_t mode=1, Bool_t dobands = false)
   RooFitResult* fitresults;
 //  TString ssignal = "MiniTrees/OlivierAug13/v02_regkin_mggjj_0/Radion_m500_regression-m500_minimal.root";
 //  TString ddata   = "MiniTrees/OlivierAug13/v02_regkin_mggjj_0/Data_regression-m500_minimal.root";
-//  TString ssignal = "MiniTrees/OlivierOc13/v15_base_mggjj_0/02013-10-30-Radion_m1000_8TeV_nm_m1000.root";
-//  TString ddata   = "MiniTrees/OlivierOc13/v15_base_mggjj_0/02013-10-30-Data_m1000.root";
+//  TString ssignal = "MiniTrees/OlivierOc13/v15_base_mggjj_0/02013-10-30-Radion_m550_8TeV_nm_m550.root";
+//  TString ddata   = "MiniTrees/OlivierOc13/v15_base_mggjj_0/02013-10-30-Data_m550.root";
   //
-  TString ssignal = "MiniTrees/ChiaraNov13/v20/finalizedTrees_Radion_V07__fitToGGJJ__noKinFit/RadionSignal_m650.root";
-  TString ddata   = "MiniTrees/ChiaraNov13/v20/finalizedTrees_Radion_V07__fitToGGJJ__noKinFit/Data.root";
+  TString ssignal = "MiniTrees/ChiaraNov13/v20/finalizedTrees_Radion_V07__fitToGGJJ__withKinFit/RadionSignal_m550.root";
+  TString ddata   = "MiniTrees/ChiaraNov13/v20/finalizedTrees_Radion_V07__fitToGGJJ__withKinFit/Data.root";
   //
   cout<<"Signal: "<< ssignal<<endl;
   cout<<"Data: "<< ddata<<endl;
@@ -382,7 +382,7 @@ RooFitResult* BkgModelFitBernstein(RooWorkspace* w, Bool_t dobands) {
     legmc->AddEntry(plotmtotBkg[c]->getObject(1),"Exponential fit","L");
     if(dobands)legmc->AddEntry(twosigma,"two sigma ","F"); 
     if(dobands)legmc->AddEntry(onesigma,"one sigma","F");
-    legmc->SetHeader("WP4 1000 GeV");
+    legmc->SetHeader("WP4 550 GeV");
     legmc->SetBorderSize(0);
     legmc->SetFillStyle(0);
     legmc->Draw();    
@@ -593,7 +593,7 @@ void MakePlots(RooWorkspace* w, Float_t Mass, RooFitResult* fitresults) {
     //    float effS = effSigma(hist);
     TLatex *lat  = new TLatex(
 	minMassFit+1.5,0.85*plotmtot[c]->GetMaximum(),
-	" WP4 1000 GeV");
+	" WP4 550 GeV");
     lat->Draw();
     TLatex *lat2 = new TLatex(
 	minMassFit+1.5,0.75*plotmtot[c]->GetMaximum(),catdesc.at(c));
