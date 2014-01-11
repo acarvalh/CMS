@@ -87,11 +87,11 @@ void runfits(const Float_t mass=120, Int_t mode=1, Bool_t dobands = false)
   // Construct points workspace
   MakeSigWS(w, fileBaseName);
   MakeBkgWS(w, fileBkgName);
-//  MakePlots(w, mass, fitresults);
+  MakePlots(w, mass, fitresults);
 
-//  MakeDataCardonecat(w, fileBaseName, fileBkgName);
+  MakeDataCardonecat(w, fileBaseName, fileBkgName);
   MakeDataCardREP(w, fileBaseName, fileBkgName);
-//  MakeDataCardLnU(w, fileBaseName, fileBkgName);
+  MakeDataCardLnU(w, fileBaseName, fileBkgName);
   cout<< "here"<<endl;
   return;
 } // close runfits
