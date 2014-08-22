@@ -18,3 +18,6 @@ git remote -v
 
 ##########################################################
 scp -r acarvalh@lxplus.cern.ch:/afs/cern.ch/work/a/acarvalh/CMSSW_5_2_3_patch4/src/libDelphes.so
+###########################################################
+find bkg jobs
+ps axu | grep acarvalh
