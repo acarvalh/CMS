@@ -8,6 +8,9 @@ http://cms.cern.ch/iCMS/jsp/iCMS.jsp?mode=single&block=publications
 see quota
 https://resources.web.cern.ch/resources/Manage/AFS/Settings.aspx?login=acarvalh
 ##############################################################
+list folders size
+ du -sh *
+#############################################################
 
 git
 
