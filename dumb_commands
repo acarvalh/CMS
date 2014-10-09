@@ -8,6 +8,8 @@ http://cms.cern.ch/iCMS/jsp/iCMS.jsp?mode=single&block=publications
 see quota
 https://resources.web.cern.ch/resources/Manage/AFS/Settings.aspx?login=acarvalh
 ##############################################################
+ssh -XY carvalho@heidi.pd.infn.it
+##############################################################
 list folders size
  du -sh *
 #############################################################
