@@ -12,6 +12,9 @@ ssh -XY carvalho@heidi.pd.infn.it
 ##############################################################
 list folders size
  du -sh *
+ #############################################################3
+ ssh -L 1025:host.pd.infn.it:22 carvalho@gate.pd.infn.it
+ ssh -XY carvalho@heidi.pd.infn.it
 #############################################################
 
 git
