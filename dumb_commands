@@ -16,7 +16,9 @@ list folders size
  ssh -L 1025:host.pd.infn.it:22 carvalho@gate.pd.infn.it
  ssh -XY carvalho@heidi.pd.infn.it
 #############################################################
-
+count pattern
+awk '{for(x=1; x<=NF;x++){if($x ~ /\#/){z++}}} END{print z}' /Users/Xanda/Documents/codes/ToponeLHE/single6/sin6TRm2000w10.lhe.decayed
+#############################################################
 git
 
 git clone
