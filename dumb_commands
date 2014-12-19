@@ -9,11 +9,12 @@ see quota
 https://resources.web.cern.ch/resources/Manage/AFS/Settings.aspx?login=acarvalh
 ##############################################################
 ssh -XY carvalho@heidi.pd.infn.it
+source /Users/Xanda/Documents/programs/root/bin/thisroot.sh 
 ##############################################################
 list folders size
  du -sh *
  #############################################################3
- ssh -L 1025:host.pd.infn.it:22 carvalho@gate.pd.infn.it
+ ssh -XYL 1025:host.pd.infn.it:22 carvalho@gate.pd.infn.it
  ssh -XY carvalho@heidi.pd.infn.it
 #############################################################
 count pattern
