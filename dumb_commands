@@ -20,7 +20,7 @@ list folders size
 count pattern
 awk '{for(x=1; x<=NF;x++){if($x ~ /\#/){z++}}} END{print z}' /Users/Xanda/Documents/codes/ToponeLHE/single6/sin6TRm2000w10.lhe.decayed
 #############################################################
-git
+https://help.github.com/articles/generating-ssh-keys/
 
 git clone
 git add
@@ -36,6 +36,7 @@ scp -r acarvalh@lxplus.cern.ch:/afs/cern.ch/work/a/acarvalh/CMSSW_5_2_3_patch4/s
 find bkg jobs
 ps axu | grep acarvalh
 
+fs listquota
 ##################################
 print cern
 acroread CheckMyTrip7XS84P.pdf 
