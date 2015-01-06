@@ -35,6 +35,8 @@ fink
 brew
 ##########################################################
 scp -r acarvalh@lxplus.cern.ch:/afs/cern.ch/work/a/acarvalh/CMSSW_5_2_3_patch4/src/libDelphes.so
+
+source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.32.00/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh
 ###########################################################
 find bkg jobs
 ps axu | grep acarvalh
