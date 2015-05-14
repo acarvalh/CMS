@@ -47,3 +47,11 @@ fs listquota
 print cern
 acroread CheckMyTrip7XS84P.pdf 
 42-2COR-CAN
+########################################
+install  theta
+https://agenda.infn.it/getFile.py/access?resId=0&materialId=7&confId=5719
+
+or 
+nano $HOME/.bash_profile 
+export SCRAM_ARCH=slc6_amd64_gcc491
+CMSSW_7_4_0
