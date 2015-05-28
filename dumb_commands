@@ -50,7 +50,10 @@ acroread CheckMyTrip7XS84P.pdf
 ########################################
 install  theta
 https://agenda.infn.it/getFile.py/access?resId=0&materialId=7&confId=5719
-
+######################################
+eval `./tdr runtime -sh`
+tdr  --style=an b AN-15-105
+######################################
 or 
 nano $HOME/.bash_profile 
 export SCRAM_ARCH=slc6_amd64_gcc491
