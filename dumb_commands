@@ -17,6 +17,7 @@ list folders size
  ssh -XYL 1025:host.pd.infn.it:22 carvalho@gate.pd.infn.it
  ssh -XY carvalho@heidi.pd.infn.it
  ssh -XY carvalho@t2-ui-13.pd.infn.it
+ ssh -XY acarvalh@lxplus.cern.ch
 #############################################################
 count pattern
 awk '{for(x=1; x<=NF;x++){if($x ~ /\#/){z++}}} END{print z}' /Users/Xanda/Documents/codes/ToponeLHE/single6/sin6TRm2000w10.lhe.decayed
@@ -58,3 +59,6 @@ or
 nano $HOME/.bash_profile 
 export SCRAM_ARCH=slc6_amd64_gcc491
 CMSSW_7_4_0
+##################################
+instalation package
+sudo port install ..
