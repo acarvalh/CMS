@@ -62,3 +62,6 @@ CMSSW_7_4_0
 ##################################
 instalation package
 sudo port install ..
+###################################
+source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.32.00/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh
+
