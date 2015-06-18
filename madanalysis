@@ -1,0 +1,9 @@
+to fastsim (source root!)
+
+./bin/ma5 -R
+ma5>set main.fastsim.package = fastjet
+ma5>set main.outputfile = test.lhe
+ma5>import samples/output.hepmc 
+
+create analysis folder
+./bin/ma5 -e
