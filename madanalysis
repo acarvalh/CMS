@@ -9,3 +9,39 @@ create analysis folder
 ./bin/ma5 -e
 
 https://indico.in2p3.fr/event/8680/session/4/contribution/32/material/slides/0.pdf
+
+/////////////////////////////////////////////////////
+to analysis
+
+./bin/ma5 -e
+
+Welcome to the expert mode of MadAnalysis
+Please enter a folder name for creating an empty SampleAnalyzer job
+Answer: dumb
+   Creating folder '...'...
+   Copying required 'SampleAnalyzer' source files...
+Please enter a name for your analysis
+Answer: dumb
+   Writing an empty analysis...
+A new class called 'dumb' will be created.
+Done !
+   Writing a 'Makefile'...
+
+Guidelines for writing an analysis in expert mode
+
+ 1. Entering the directory 'dumb/Build'
+
+ 2. Setting the environment variables by loading setup.sh or setup.csh according to your SHELL
+
+ 3. Entering the directory '~/madanalysis5/dumb/Build/SampleAnalyzer/User/Analyzer'
+
+ 4. Editing Analysis 'user.h' and 'user.cpp' files
+
+ 5. Entering the directory '/afs/cern.ch/work/a/acarvalh/phenoHH/madanalysis5/dumb/Build'
+
+ 6. Compiling with the command 'make'
+
+ 7. Writing a list of datasets
+
+ 8. Launching SampleAnalyzer with the list of datasets
+
