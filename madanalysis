@@ -4,14 +4,15 @@ to fastsim (source root!)
 ma5>set main.fastsim.package = fastjet
 ma5>set main.outputfile = test.lhe
 ma5>import samples/output.hepmc 
+ma5>submit
 
-create analysis folder
-./bin/ma5 -e
-
-https://indico.in2p3.fr/event/8680/session/4/contribution/32/material/slides/0.pdf
+the output test.lhe will be at e.g.
+ANALYSIS_2/Output/_defaultset/
 
 /////////////////////////////////////////////////////
-to analysis
+create analysis folder
+
+https://indico.in2p3.fr/event/8680/session/4/contribution/32/material/slides/0.pdf
 
 ./bin/ma5 -e
 
@@ -44,4 +45,21 @@ Guidelines for writing an analysis in expert mode
  7. Writing a list of datasets
 
  8. Launching SampleAnalyzer with the list of datasets
+
+///////////////////////////////////////
+compile
+
+cd MyAnalysis/Build
+source setup.sh
+make
+make clean (optional)
+make mrproper (optional)
+
+samples are in input.txt
+
+launch
+./MadAnalysis5job input.txt
+
+
+
 
