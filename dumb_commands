@@ -23,15 +23,20 @@ list folders size
 count pattern
 awk '{for(x=1; x<=NF;x++){if($x ~ /\#/){z++}}} END{print z}' /Users/Xanda/Documents/codes/ToponeLHE/single6/sin6TRm2000w10.lhe.decayed
 #############################################################
-https://help.github.com/articles/generating-ssh-keys/
+Import certificate in ~/.globus
 
-git clone
-git add
-git commit
-git push
-git status
-git l
-git remote -v
+
+openssl pkcs12 -nocerts -in Certificato_2013.p12 -out userkey.pem
+openssl pkcs12 -clcerts -nokeys -in Certificato_2013.p12 -out usercert.pem
+
+poi devi dare
+chmod +600 usercert.pem
+chmod +400 userkey.pem
+
+===========
+begin of session
+voms-proxy-init --voms cms
+access: xrdcp root://eosuser.cern.ch//eos/user/p/pinokio/hello.txt /tmp/hello.txt
 ##########################################################
 package manager
 fink
