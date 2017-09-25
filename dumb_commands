@@ -22,7 +22,8 @@ list folders size
 #############################################################
 count pattern
 awk '{for(x=1; x<=NF;x++){if($x ~ /\#/){z++}}} END{print z}' /Users/Xanda/Documents/codes/ToponeLHE/single6/sin6TRm2000w10.lhe.decayed
-#############################################################
+############################################################
+https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookStartingGrid#BasicGrid
 Import certificate in ~/.globus
 
 
