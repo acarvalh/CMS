@@ -1,7 +1,3 @@
-cut a tree on terminal
-TCVARS->Draw("mgg","mgg>120 && mgg<130")
-#########################################################3
-git push origin xanda
 #############################################
 find AN's
 http://cms.cern.ch/iCMS/jsp/iCMS.jsp?mode=single&block=publications
@@ -11,6 +7,9 @@ https://resources.web.cern.ch/resources/Manage/AFS/Settings.aspx?login=acarvalh
 ##############################################################
 ssh -XY carvalho@heidi.pd.infn.it
 source /Users/Xanda/Documents/programs/root/bin/thisroot.sh 
+#############################################################
+decript a pdf file
+qpdf -decrypt domanda-79861-ric2018b1.pdf domanda-79861-ric2018b1-3.pdf
 ##############################################################
 list folders size
  du -sh *
