@@ -5,19 +5,16 @@ http://cms.cern.ch/iCMS/jsp/iCMS.jsp?mode=single&block=publications
 see quota
 https://resources.web.cern.ch/resources/Manage/AFS/Settings.aspx?login=acarvalh
 ##############################################################
-ssh -XY carvalho@heidi.pd.infn.it
-source /Users/Xanda/Documents/programs/root/bin/thisroot.sh 
-#############################################################
 decript a pdf file
 qpdf -decrypt domanda-79861-ric2018b1.pdf domanda-79861-ric2018b1-3.pdf
 ##############################################################
 list folders size
  du -sh *
  #############################################################3
- ssh -XYL 1025:host.pd.infn.it:22 carvalho@gate.pd.infn.it
+ ssh -XYL 1025:host.pd.infn.it:22 user@gate.pd.infn.it
  ssh -XY carvalho@heidi.pd.infn.it
  ssh -XY carvalho@t2-ui-13.pd.infn.it
- ssh -XY acarvalh@lxplus.cern.ch
+ ssh -XY user@lxplus.cern.ch
 #############################################################
 count pattern
 awk '{for(x=1; x<=NF;x++){if($x ~ /\#/){z++}}} END{print z}' /Users/Xanda/Documents/codes/ToponeLHE/single6/sin6TRm2000w10.lhe.decayed
@@ -42,14 +39,10 @@ package manager
 fink
 brew
 ##########################################################
-scp -r acarvalh@lxplus.cern.ch:/afs/cern.ch/work/a/acarvalh/CMSSW_5_2_3_patch4/src/libDelphes.so
-
 source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.32.00/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh
 ###########################################################
 find bkg jobs
-ps axu | grep acarvalh
-
-fs listquota
+ps axu | grep user
 ##################################
 print cern
 acroread CheckMyTrip7XS84P.pdf 
@@ -60,17 +53,5 @@ https://agenda.infn.it/getFile.py/access?resId=0&materialId=7&confId=5719
 ######################################
 eval `./tdr runtime -sh`
 tdr  --style=an b AN-15-105
-######################################
-or 
-nano $HOME/.bash_profile 
-export SCRAM_ARCH=slc6_amd64_gcc491
-CMSSW_7_4_0
-##################################
-instalation package
-sudo port install ..
-###################################
-source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.32.00/x86_64-slc5-gcc43-opt/root/bin/thisroot.sh
-
-http://lpsc.in2p3.fr/projects-th/lilith/
 ###################################
 ispell skeleton.tex 
